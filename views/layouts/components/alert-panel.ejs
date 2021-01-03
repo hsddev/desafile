@@ -1,0 +1,12 @@
+<!-- begin::Panel -->
+<% if(typeof panel != 'undefined' && panel.length > 0) {%>
+  <div class="alert alert-<%= panel[0].type %> fade show" style="margin: 0;position: fixed; width: 100%; z-index: 999; " role="alert" id="alert-panel">
+      <div class="alert-text text-center kt-font-bold"><%= panel[0].msg %></div>
+      <div class="alert-close">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true"><i class="la la-close"></i></span>
+        </button>
+    </div>
+  </div>
+<% }; %>   
+<!-- end::Panel -->

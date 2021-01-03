@@ -1,0 +1,197 @@
+<!-- begin:: Header -->
+<div id="kt_header" class="kt-header kt-grid__item  kt-header--fixed " data-ktheader-minimize="on" style="background-image: url(./assets/media/layout/header-bg-demo3.jpg)">
+  <div class="kt-header__top">
+    <div class="kt-container">
+
+      <!-- begin:: Brand -->
+      <div class="kt-header__brand   kt-grid__item" id="kt_header_brand">
+        <div class="kt-header__brand-logo" style="color: #dbdfe9;">
+          <h3 class="kt-header__brand-logo-default"><%= page.companyName %></h3>
+          <h3 class="kt-header__brand-logo-sticky"><%= page.companyName %></h3>
+        </div>
+      </div>
+
+      <!-- end:: Brand -->
+
+      <!-- begin:: Topbar -->
+      <div class="kt-header__topbar">
+
+        <!--begin: Search -->
+        <div class="kt-header__topbar-item kt-header__topbar-item--search">
+          <div class="kt-header__topbar-wrapper">
+            <div class="kt-quick-search kt-quick-search--inline kt-quick-search--result-compact" id="kt_quick_search_inline">
+              <form method="get" class="kt-quick-search__form">
+                <div class="input-group">
+                  <div class="input-group-prepend"><span class="input-group-text"><i class="flaticon2-search-1"></i></span></div>
+                  <input type="text" class="form-control kt-quick-search__input" placeholder="Search...">
+                  <div class="input-group-append"><span class="input-group-text"><i class="la la-close kt-quick-search__close"></i></span></div>
+                </div>
+              </form>
+              <div data-toggle="dropdown" data-offset="0,10px"></div>
+              <div class="dropdown-menu dropdown-menu-fit dropdown-menu-right dropdown-menu-anim dropdown-menu-lg">
+                <div class="kt-quick-search__wrapper kt-scroll" data-scroll="true" data-height="325" data-mobile-height="200">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--end: Search -->
+       
+        <!--begin: Quick Actions -->
+        <!--<div class="kt-header__topbar-item dropdown">
+          <div class="kt-header__topbar-wrapper" data-toggle="dropdown" data-offset="20px,10px">
+            <span class="kt-header__topbar-icon"><i class="flaticon-layers"></i></span>
+          </div>
+          <div class="dropdown-menu dropdown-menu-fit dropdown-menu-right dropdown-menu-anim dropdown-menu-xl">
+            <div class="kt-head" style="background-image: url(./assets/media/misc/head_bg_sm.jpg)">
+              <h3 class="kt-head__title">Quick Actions</h3>
+            </div>
+            <div class="kt-grid-nav">
+              <a href="#" class="kt-grid-nav__item">
+                <div class="kt-grid-nav__item-icon"><i class="flaticon-computer"></i></div>
+                <div class="kt-grid-nav__item-title">Customers</div>
+                <div class="kt-grid-nav__item-desc">per department</div>
+              </a>
+              <a href="#" class="kt-grid-nav__item">
+                <div class="kt-grid-nav__item-icon"><i class="flaticon-business"></i></div>
+                <div class="kt-grid-nav__item-title">Orders</div>
+                <div class="kt-grid-nav__item-desc">latest orders</div>
+              </a>
+              <a href="#" class="kt-grid-nav__item">
+                <div class="kt-grid-nav__item-icon"><i class="flaticon-line-graph"></i></div>
+                <div class="kt-grid-nav__item-title">Reports</div>
+                <div class="kt-grid-nav__item-desc">finance & accounting</div>
+              </a>
+              <a href="#" class="kt-grid-nav__item">
+                <div class="kt-grid-nav__item-icon"><i class="flaticon-settings"></i></div>
+                <div class="kt-grid-nav__item-title">Administration</div>
+                <div class="kt-grid-nav__item-desc">settings and logs</div>
+              </a>
+            </div>
+          </div>
+        </div>-->
+
+        <!--end: Quick Actions -->
+
+        <!--begin: Quick Panel Toggler -->
+        <!--<div class="kt-header__topbar-item" data-toggle="kt-tooltip" title="Quick panel" data-placement="top">
+          <div class="kt-header__topbar-wrapper">
+            <span class="kt-header__topbar-icon" id="kt_quick_panel_toggler_btn"><i class="flaticon-grid-menu"></i></span>
+          </div>
+        </div>-->
+
+        <!--end: Quick Panel Toggler -->
+        
+        <!--begin: Notifications -->
+        <div class="kt-header__topbar-item dropdown">
+          <div class="kt-header__topbar-wrapper" data-toggle="dropdown" data-offset="20px,10px">
+            <span class="kt-header__topbar-icon"><i class="flaticon-alarm"></i></span>
+            <span class="kt-badge kt-badge--danger" style="display: none;" id="notification-count">0</span>
+          </div>
+          <div class="dropdown-menu dropdown-menu-fit dropdown-menu-right dropdown-menu-anim dropdown-menu-xl">
+            <div class="kt-head kt-head--sm kt-head--skin-light">
+              <h3 class="kt-head__title">User Notifications</h3>
+            </div>
+            <div class="kt-notification kt-margin-t-10 kt-margin-b-10 kt-scroll" id="notifications" data-scroll="true" data-height="270">
+              
+            </div>
+          </div>
+        </div>
+
+        <!--end: Notifications -->
+
+        <!--begin: User -->
+        <div class="kt-header__topbar-item kt-header__topbar-item--user">
+          <div class="kt-header__topbar-wrapper" data-toggle="dropdown" data-offset="20px,10px">
+            <div class="kt-avatar kt-avatar--outline kt-avatar--circle">
+              <div class="kt-header__topbar-icon" style="border: unset; height: 46px; width: 46px; background-size: cover;background-image: url(/avatar?username=<%= user.username %>)"></div>
+            </div>
+          </div>
+          <div class="dropdown-menu dropdown-menu-fit dropdown-menu-right dropdown-menu-anim dropdown-menu-md">
+            <div class="kt-user-card-v4 kt-user-card-v4--skin-light kt-notification-item-padding-x">
+              <div class="kt-user-card-v4__avatar">
+              <div class="kt-avatar kt-avatar--outline kt-avatar--accent">
+                <div class="kt-avatar__holder" style="border: unset; width: 60px; height: 60px; background-size: cover;background-image: url(/avatar?username=<%= user.username %>)"></div>
+              </div>
+                <!--use below badge element instead the user avatar to display username's first letter(remove kt-hidden class to display it) -->
+                <span class="kt-badge kt-badge--username kt-badge--unified-success kt-badge--lg kt-badge--rounded kt-badge--bold kt-hidden">S</span>
+              </div>
+              <div class="kt-user-card-v4__name">
+                <%= user.fullname %>
+                <small>@<%= user.username %></small>
+              </div>
+            </div>
+            <ul class="kt-nav kt-margin-b-10">
+              <li class="kt-nav__item">
+                <a href="/profile" class="kt-nav__link">
+                  <span class="kt-nav__link-icon"><i class="flaticon2-schedule"></i></span>
+                  <span class="kt-nav__link-text">My Profile</span>
+                </a>
+              </li>
+              <!--<li class="kt-nav__item">
+                <a href="demo3/custom/user/profile-v1.html" class="kt-nav__link">
+                  <span class="kt-nav__link-icon"><i class="flaticon2-writing"></i></span>
+                  <span class="kt-nav__link-text">Tasks</span>
+                </a>
+              </li>
+              <li class="kt-nav__item">
+                <a href="demo3/custom/user/profile-v1.html" class="kt-nav__link">
+                  <span class="kt-nav__link-icon"><i class="flaticon2-mail-1"></i></span>
+                  <span class="kt-nav__link-text">Messages</span>
+                </a>
+              </li>
+              <li class="kt-nav__item">
+                <a href="demo3/custom/user/profile-v1.html" class="kt-nav__link">
+                  <span class="kt-nav__link-icon"><i class="flaticon2-drop"></i></span>
+                  <span class="kt-nav__link-text">Settings</span>
+                </a>
+              </li>-->
+              <li class="kt-nav__item kt-nav__item--custom kt-margin-t-15">
+                <a href="/logout" class="btn btn-label-brand btn-upper btn-sm btn-bold">Sign Out</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!--end: User -->
+      </div>
+
+      <!-- end:: Topbar -->
+    </div>
+  </div>
+  <div class="kt-header__bottom">
+    <div class="kt-container">
+      <!-- begin: Header Menu -->
+      <button class="kt-header-menu-wrapper-close" id="kt_header_menu_mobile_close_btn"><i class="la la-close"></i></button>
+      <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper">
+        <div id="kt_header_menu" class="kt-header-menu kt-header-menu-mobile ">
+          <ul class="kt-menu__nav ">
+            <% navs.filter(nav => nav.inHeader).sort((a,b)=> a.position - b.position).forEach(function(nav){ %>
+              <% if('items' in nav) { %>
+                <li class="kt-menu__item kt-menu__item--submenu kt-menu__item--rel <%= (nav.active === true) ? 'kt-menu__item--here' : ''%>" data-ktmenu-submenu-toggle="click" aria-haspopup="true"><a href="#" class="kt-menu__link kt-menu__toggle"><span class="kt-menu__link-text"><%= nav.title %></span><i class="kt-menu__hor-arrow la la-angle-down"></i><i class="kt-menu__ver-arrow la la-angle-right"></i></a>
+                <div class="kt-menu__submenu kt-menu__submenu--classic kt-menu__submenu--left">
+                  <ul class="kt-menu__subnav">
+                  <% nav.items.filter(nav => nav.inHeader).sort((a,b)=> a.position - b.position).forEach(function(item){ %>
+                    <li class="kt-menu__item <%= (item.active === true) ? 'kt-menu__item--here' : ''%>" aria-haspopup="true"><a href="<%= nav.path + item.path %>" class="kt-menu__link "><i class="kt-menu__link-bullet kt-menu__link-bullet--dot"><span></span></i><span class="kt-menu__link-text"><%= item.title %></span></a></li>
+                  <% });%>
+                  </ul>
+                </div>
+              </li>
+              <% } else { %>
+                <li class="kt-menu__item kt-menu__item--submenu kt-menu__item--rel <%= (nav.active === true) ? 'kt-menu__item--here' : ''%>" data-ktmenu-submenu-toggle="click" aria-haspopup="true">
+                  <a href="<%= nav.path %>" class="kt-menu__link">
+                    <span class="kt-menu__link-text"><%= nav.title %></span>
+                    <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                  </a>
+                </li>
+              <% }; %>
+            <% });%>
+          </ul>
+        </div>
+      </div>
+      <!-- end: Header Menu -->
+    </div>
+  </div>
+</div>					
+<!-- end:: Header -->

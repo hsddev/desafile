@@ -1,0 +1,69 @@
+<% layout('../layouts/auth') -%>
+
+<% block('baseUrl', '../'); -%>
+
+<% block('title', 'Reset Password || ' + page.companyName); -%>
+
+<!--begin::Body-->
+<div class="kt-login-v2__body">
+
+  <!--begin::Wrapper-->
+  <div class="kt-login-v2__wrapper">
+    <div class="kt-login-v2__container">
+      <div class="kt-login-v2__title">
+        <h3>Reset your password</h3>
+        <p>Enter your new password and confirm it.</p>
+      </div>
+
+      <!--begin::Form-->
+      <form class="kt-login-v2__form kt-form" action="" method="post" autocomplete="off" novalidate>
+        <% if (errors.length > 0) { %>
+          <div class="alert alert-danger fade show" role="alert">
+              <div class="alert-text">
+                <ul style="margin: 0;">
+                  <% errors.forEach(function(err){ %>
+                    <li><%= err.msg %></li>
+                  <% }); %>
+                </ul>
+              </div>
+              <div class="alert-close">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true"><i class="la la-close"></i></span>
+                </button>
+            </div>
+          </div>
+        <% }; %>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="form-group">
+          <label>Username:</label>
+          <p class="form-control-static"><%= username %></p>
+        </div>
+        <div class="form-group">
+          <input class="form-control" type="password" placeholder="New Password" name="password" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <input class="form-control" type="password" placeholder="Confirm New Password" name="confirmPassword" autocomplete="off">
+        </div>
+        <!--begin::Action-->
+        <div class="kt-login-v2__actions">
+          <span>Remembered your password? <a href="/login" class="kt-link kt-font-brand">Sign in</a></span>
+          <button type="submit" class="btn btn-brand btn-elevate btn-pill">Change</button>
+        </div>
+        <!--end::Action-->
+      </form>
+
+      <!--end::Form-->
+    </div>
+  </div>
+
+  <!--end::Wrapper-->
+
+  <!--begin::Image-->
+  <div class="kt-login-v2__image" style="max-height: 350px;">
+    <img src="./assets/media/misc/bg_icon.svg" alt="">
+  </div>
+
+  <!--begin::Image-->
+</div>
+
+<!--begin::Body-->

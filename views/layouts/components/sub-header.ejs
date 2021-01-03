@@ -1,0 +1,34 @@
+<div class="kt-subheader   kt-grid__item" id="kt_subheader">
+  <div class="kt-subheader__main">
+    <% navs.forEach((nav) => { %>
+      <% if(nav.active && ('items' in nav)) { %>
+        <% nav.items.forEach((item) => { %>
+          <% if(item.active) { %>
+              <h3 class="kt-subheader__title"><%= item.title %></h3>
+          <% };%>
+        <% }); %>
+      <% } else if(nav.active && !('items' in nav)) { %>
+        <h3 class="kt-subheader__title"><%= nav.title %></h3>
+      <% }; %>
+    <% }); %>
+    <span class="kt-subheader__separator kt-subheader__separator--v"></span>
+    <div class="kt-subheader__breadcrumbs">
+      <a href="/" class="kt-subheader__breadcrumbs-link">Home</a>
+      <% navs.forEach((nav) => { %>
+        <% if(nav.active && ('items' in nav)) { %>
+          <span class="kt-subheader__breadcrumbs-separator"></span>
+          <a href="<%= nav.path %>" class="kt-subheader__breadcrumbs-link"><%= nav.title %></a>
+          <% nav.items.forEach((item) => { %>
+            <% if(item.active) { %>
+                <span class="kt-subheader__breadcrumbs-separator"></span>
+                <span class="kt-subheader__breadcrumbs-link kt-subheader__breadcrumbs-link--active"><%= item.title %></span>
+            <% };%>
+          <% }); %>
+        <% } else if(nav.active && !('items' in nav)) { %>
+          <span class="kt-subheader__breadcrumbs-separator"></span>
+          <span class="kt-subheader__breadcrumbs-link kt-subheader__breadcrumbs-link--active"><%= nav.title %></span>
+        <% }; %>
+      <% }); %>
+    </div>
+  </div>
+</div>

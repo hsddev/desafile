@@ -1,0 +1,173 @@
+<script type="text/javascript">
+  function downloadFile(id, filename, ext, size, type) {
+    swal({
+          title: 'File is ready to be downloaded!',
+          text: "This file will be permanently deleted in 2 days, you can recover it from my deleted files.",
+          type: 'success',
+          html: '<form type="hidden" target="_blank" id="form-download" action="/files/'+id+'?request=download" method="post">\
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">\
+                    <div class="form-group">\
+                        <label>File name</label>\
+                        <div>\
+                            <div class="input-group">\
+                              <input type="text" class="form-control" name="filename" value="'+filename+'" aria-describedby="FileExt" />\
+                              ' + ((ext) ? '<div class="input-group-append"><span class="input-group-text" id="FileExt">'+ext+'</span></div>': '') + '\
+                            </div>\
+                          <span class="form-text text-muted">Size: '+size+', Type: '+type+'</span>\
+                        </div>\
+                      </div>\
+                  </form>',
+          confirmButtonText: 'Download Now!',
+      }).then(function(result){
+          if (result.value) {
+            $('form#form-download').submit();
+          }
+      })
+  }
+</script>
+<script>
+  "use strict";var KTBootstrapMaxlength={init:function(){$("#kt_maxlength_1").maxlength({warningClass:"kt-badge kt-badge--warning kt-badge--rounded kt-badge--inline",limitReachedClass:"kt-badge kt-badge--success kt-badge--rounded kt-badge--inline"}),$("#kt_maxlength_2").maxlength({threshold:5,warningClass:"kt-badge kt-badge--danger kt-badge--rounded kt-badge--inline",limitReachedClass:"kt-badge kt-badge--success kt-badge--rounded kt-badge--inline"}),$("#kt_maxlength_3").maxlength({alwaysShow:!0,threshold:5,warningClass:"kt-badge kt-badge--primary kt-badge--rounded kt-badge--inline",limitReachedClass:"kt-badge kt-badge--brand kt-badge--rounded kt-badge--inline"}),$("#kt_maxlength_4").maxlength({threshold:3,warningClass:"kt-badge kt-badge--danger kt-badge--rounded kt-badge--inline",limitReachedClass:"kt-badge kt-badge--success kt-badge--rounded kt-badge--inline",separator:" of ",preText:"You have ",postText:" chars remaining.",validate:!0}),$("#kt_maxlength_5").maxlength({threshold:5,warningClass:"kt-badge kt-badge--primary kt-badge--rounded kt-badge--inline",limitReachedClass:"kt-badge kt-badge--brand kt-badge--rounded kt-badge--inline"}),$("#kt_maxlength_6_1").maxlength({alwaysShow:!0,threshold:5,placement:"top-left",warningClass:"kt-badge kt-badge--brand kt-badge--rounded kt-badge--inline",limitReachedClass:"kt-badge kt-badge--brand kt-badge--rounded kt-badge--inline"}),$("#kt_maxlength_6_2").maxlength({alwaysShow:!0,threshold:5,placement:"top-right",warningClass:"kt-badge kt-badge--success kt-badge--rounded kt-badge--inline",limitReachedClass:"kt-badge kt-badge--brand kt-badge--rounded kt-badge--inline"}),$("#kt_maxlength_6_3").maxlength({alwaysShow:!0,threshold:5,placement:"bottom-left",warningClass:"kt-badge kt-badge--warning kt-badge--rounded kt-badge--inline",limitReachedClass:"kt-badge kt-badge--brand kt-badge--rounded kt-badge--inline"}),$("#kt_maxlength_6_4").maxlength({alwaysShow:!0,threshold:5,placement:"bottom-right",warningClass:"kt-badge kt-badge--danger kt-badge--rounded kt-badge--inline",limitReachedClass:"kt-badge kt-badge--brand kt-badge--rounded kt-badge--inline"}),$("#kt_maxlength_1_modal").maxlength({warningClass:"kt-badge kt-badge--warning kt-badge--rounded kt-badge--inline",limitReachedClass:"kt-badge kt-badge--success kt-badge--rounded kt-badge--inline",appendToParent:!0}),$("#kt_maxlength_2_modal").maxlength({threshold:5,warningClass:"kt-badge kt-badge--danger kt-badge--rounded kt-badge--inline",limitReachedClass:"kt-badge kt-badge--success kt-badge--rounded kt-badge--inline",appendToParent:!0}),$("#kt_maxlength_5_modal").maxlength({threshold:5,warningClass:"kt-badge kt-badge--primary kt-badge--rounded kt-badge--inline",limitReachedClass:"kt-badge kt-badge--brand kt-badge--rounded kt-badge--inline",appendToParent:!0}),$("#kt_maxlength_4_modal").maxlength({threshold:3,warningClass:"kt-badge kt-badge--danger kt-badge--rounded kt-badge--inline",limitReachedClass:"kt-badge kt-badge--success kt-badge--rounded kt-badge--inline",appendToParent:!0,separator:" of ",preText:"You have ",postText:" chars remaining.",validate:!0})}};jQuery(document).ready(function(){KTBootstrapMaxlength.init()});        
+        
+  <% if(canEdit) { %>
+    function deleteFile(id, _csrf) {
+      swal({
+          title: 'Are you sure?',
+          text: "This file will be permanently deleted in 2 days, you can recover it from my deleted files.",
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, delete it!',
+          cancelButtonText: 'No, cancel!',
+          reverseButtons: true
+          }).then(function(result){
+              if (result.value) {
+                var url = '/files/'+ id;
+                  $.ajax({
+                    type: "DELETE",
+                    url: url,
+                    data: {
+                      _csrf: _csrf
+                    },
+                    success: function(data) {
+                      if(data && data.success) {
+                        swal(
+                            'Deleted!',
+                            'Your file has been deleted.',
+                            'success'
+                        ).then(function(result){
+                          if(result.value || result.dismiss) {
+                            window.location.href = '/files';
+                          }
+                        });
+                      }
+                    }
+                  });
+              }
+          });
+    }
+    function recoverFile(id, _csrf) {
+      swal({
+          title: 'File Recovering',
+          text: "This file will be recovered to the uploaded list.",
+          type: 'info',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, revocer it now!',
+          cancelButtonText: 'No, cancel!',
+          reverseButtons: true
+          }).then(function(result){
+              if (result.value) {
+                var url = '/files/'+ id;
+                  $.ajax({
+                    type: "DELETE",
+                    url: url,
+                    data: {
+                      _csrf: _csrf,
+                      recover: true
+                    },
+                    success: function(data) {
+                      if(data && data.success) {
+                        swal({
+                            title:'Success!',
+                            text:'Your file has been successfuly recoverd.',
+                            type:'success',
+                            showCancelButton: true,
+                            confirmButtonText: 'to Uploded files list!',
+                            cancelButtonText: 'to Deleted files list!'
+                        }
+                        ).then(function(result){
+                          if(result.value) {
+                            window.location.href = '/files/';
+                          } else {  
+                            window.location.href = '/files/deleted';
+                          }
+                        });
+                      }
+                    }
+                  });
+              }
+          });
+    }
+
+  var KTTypeahead = function() {
+
+  var categories = <%- categories %>;
+
+  // Private functions
+  var category = function() {
+      var substringMatcher = function(strs) {
+          return function findMatches(q, cb) {
+              var matches, substringRegex;
+
+              // an array that will be populated with substring matches
+              matches = [];
+
+              // regex used to determine if a string contains the substring `q`
+              var substrRegex = new RegExp(q, 'i');
+
+              // iterate through the pool of strings and for any string that
+              // contains the substring `q`, add it to the `matches` array
+              $.each(strs, function(i, str) {
+                  if (substrRegex.test(str)) {
+                      matches.push(str);
+                  }
+              });
+
+              cb(matches);
+          };
+      };
+
+      $('#category').typeahead({
+          hint: true,
+          highlight: true,
+          minLength: 0
+      }, {
+          name: 'categories',
+          source: substringMatcher(categories)
+      });
+  }
+
+    return {
+        // public functions
+        init: function() {
+            category();
+        }
+    };
+  }();
+
+  jQuery(document).ready(function() {
+    KTTypeahead.init();
+  });
+  
+<% }; %>
+</script>
+<script>
+  jQuery(document).ready(function() {
+    var timesToChange = document.getElementsByClassName("time-to-change");
+    for(var i = 0; i < timesToChange.length; i++) {
+      var timeToChange= timesToChange[i];
+      var timeAttr = timeToChange.getAttribute("data-time") * 1;
+      var time = moment.utc(timeAttr).toDate();
+      timeToChange.innerHTML = moment(time).local().format('HH:mm  DD/MM/YYYY');
+    }
+  });
+
+</script>

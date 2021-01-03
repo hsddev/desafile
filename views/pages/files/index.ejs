@@ -1,0 +1,225 @@
+<% layout('../../layouts/page'); %>
+
+<% if(typeof page.type == 'undefined') { %>
+  <% block('baseUrl', '../'); -%>
+<% } else if(typeof page.type != 'undefined' && (page.type === 'deletedFiles' || page.type === 'recivedFiles' )  ) { %>
+  <% block('baseUrl', '../../'); -%>
+<% }; %>
+
+<% if(typeof page.type == 'undefined') { %>
+  <% block('title', 'Uploaded Files || ' + page.companyName); -%>
+<% } else if(typeof page.type != 'undefined' && (page.type === 'deletedFiles' )  ) { %>
+  <% block('title', 'Deleted Files || ' + page.companyName); -%>
+<% } else if(typeof page.type != 'undefined' && (page.type === 'recivedFiles' )  ) { %>
+  <% block('title', 'Recived Files || ' + page.companyName); -%>
+<% }; %>
+
+<% block('jsfile', 'files-index'); %>
+
+<!-- begin:: Content -->
+<div class="kt-content kt-grid__item kt-grid__item--fluid">
+
+  <!--begin::Dashboard 2-->
+
+  <!--begin::Row-->
+  <div class="row">
+    <div class="col-12">
+      <div class="kt-portlet">
+        <div class="kt-portlet__head">
+          <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title"><%= page.portletTitle%>
+              <small><%= page.portletDesc%></small>
+            </h3>
+          </div>
+          <% if(typeof page.type == 'undefined') { %>
+          <div class="kt-portlet__head-toolbar">
+              <div class="kt-portlet__head-wrapper kt-form">
+                <a href="/files/new" class="btn btn-label btn-label-brand btn-upper btn-font-sm btn-bold">
+                    <i class="flaticon2-add-1"></i> New File
+                </a>
+              </div>
+          </div>
+          <% }; %>
+        </div>
+        <div class="kt-portlet__body">
+          <!--begin: Search Form -->
+          <div class="kt-form kt-fork--label-right kt-margin-t-20 kt-margin-b-10">
+            <div class="row align-items-center">
+              <div class="col-xl-8 order-2 order-xl-1">
+                <div class="row align-items-center">
+                  <div class="col-md-4 kt-margin-b-20-tablet-and-mobile">
+                    <div class="kt-input-icon kt-input-icon--left">
+                      <input type="text" class="form-control" placeholder="Search..." id="generalSearch">
+                      <span class="kt-input-icon__icon kt-input-icon__icon--left">
+                        <span><i class="la la-search"></i></span>
+                      </span>
+                    </div>
+                  </div>
+                  <% if(typeof page.type == 'undefined' || (typeof page.type != 'undefined' && page.type === 'deletedFiles' ) ) { %>
+                  <div class="col-md-4 kt-margin-b-20-tablet-and-mobile">
+                    <div class="kt-form__group kt-form__group--inline">
+                      <div class="kt-form__label">
+                        <label>Category:</label>
+                      </div>
+                      <div class="kt-form__control">
+                        <select class="form-control bootstrap-select" id="kt_form_category">
+                          <option value="">All</option>
+                          <% categories.forEach(function(category, e) { %>
+                            <option value="<%= category %>"><%= category %></option>
+                          <% }) %>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <% }; %>
+                  <div class="col-md-4 kt-margin-b-20-tablet-and-mobile">
+                    <div class="kt-form__group kt-form__group--inline">
+                      <div class="kt-form__label">
+                        <label>Type:</label>
+                      </div>
+                      <div class="kt-form__control">
+                        <select class="form-control bootstrap-select" id="kt_form_type">
+                          <option value="">All</option>
+                          <% types.forEach(function(type) { %>
+                            <option value="<%= type %>"><%= type %></option>
+                          <% }) %>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-4 order-1 order-xl-2 kt-align-right">
+                <a href="#" class="btn btn-default kt-hidden">
+                  <i class="la la-cart-plus"></i> New Order
+                </a>
+                <div class="kt-separator kt-separator--border-dashed kt-separator--space-lg d-xl-none"></div>
+              </div>
+            </div>
+          </div>
+
+          <!--end: Search Form -->
+
+          <!--begin: Selected Rows Group Action Form -->
+          <div class="kt-form kt-fork--label-align-right kt-margin-t-20 collapse" id="kt_datatable_group_action_form">
+            <div class="row align-items-center">
+              <div class="col-xl-12">
+                <div class="kt-form__group kt-form__group--inline">
+                  <div class="kt-form__label kt-form__label-no-wrap">
+                    <label class="kt--font-bold kt--font-danger-">Selected
+                      <span id="kt_datatable_selected_number">0</span> records:</label>
+                  </div>
+                  <div class="kt-form__control">
+                    <div class="btn-toolbar">
+                      <div class="dropdown">
+                        <button type="button" class="btn btn-accent btn-sm dropdown-toggle" data-toggle="dropdown">
+                          Change Category
+                        </button>
+                        <div class="dropdown-menu">
+                          <% categories.forEach(function(category, e) { %>
+                            <a class="dropdown-item" href="#"><%= category %></a>
+                          <% }) %>
+                        </div>
+                      </div>
+                      &nbsp;&nbsp;&nbsp;
+                      <button class="btn btn-sm btn-danger" type="button" id="kt_datatable_delete_all">Delete All</button>
+                      &nbsp;&nbsp;&nbsp;
+                      <button class="btn btn-sm btn-success" type="button" data-toggle="modal" data-target="#selectedRows">Selected Rows</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--end: Selected Rows Group Action Form -->
+
+        </div>
+        <div class="kt-portlet__body kt-portlet__body--fit">
+          <!--begin: Datatable -->
+          <% if(JSON.parse(files).length > 0) {%>
+            <div class="kt_datatable" id="kt_datatable"></div>
+          <% } else { %>
+            <div class="d-flex justify-content-center m-5">No Files here Yet.</div>
+          <% }; %>
+          <!--end: Datatable -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--end::Row-->
+
+  <!--end::Dashboard 2-->
+</div>
+<!-- end:: Content -->
+					
+<!--begin::Modal-->
+<div class="modal fade" id="selectedRows" tabindex="-1" role="dialog" aria-labelledby="titleModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="titleModal">File has been shred with:</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="kt-scrollable" data-scrollbar-shown="true" data-scrollable="true" data-height="200">
+          <ul class="kt_datatable_selected_ids"></ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--end::Modal-->
+                  
+<!--begin::Modal-->
+<div class="modal fade" id="downloads" tabindex="-1" role="dialog" aria-labelledby="titleModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="titleModal">File has been downloaded by:</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="kt-scrollable" data-scrollbar-shown="true" data-scrollable="true" data-height="200">
+          <ul class="kt_datatable_selected_ids"></ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--end::Modal-->
+<!--begin::Modal-->
+<div class="modal fade" id="sharedWith" tabindex="-1" role="dialog" aria-labelledby="titleModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="titleModal">File has been shred with:</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="kt-scrollable" data-scrollbar-shown="true" data-scrollable="true" data-height="200">
+          <ul class="kt_datatable_selected_ids"></ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--end::Modal-->
+
+

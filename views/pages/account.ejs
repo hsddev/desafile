@@ -1,0 +1,524 @@
+<% layout('../layouts/page'); %>
+
+<% block('baseUrl', '../'); -%>
+
+<% block('title', 'Profile || ' + page.companyName); -%>
+
+<% stylesheet('./assets/css/demo1/pages/custom/general/user/profile-v1.css') -%>
+
+<% script('./assets/js/demo1/pages/custom/general/profile.js') -%>
+
+
+<!-- begin:: Content -->
+<div class="kt-content  kt-grid__item kt-grid__item--fluid" id="kt_content">
+
+  <!--begin::Portlet-->
+  <div class="kt-portlet kt-profile">
+    <div class="kt-profile__content">
+      <div class="row">
+        <div class="col-md-12 col-lg-5 col-xl-4">
+          <div class="kt-profile__main">
+            <div class="kt-profile__main-pic">
+              <div class="kt-avatar kt-avatar--outline kt-avatar--circle">
+                <div class="kt-avatar__holder kt-profile__main-pic" style="background-size: cover;background-image: url(/avatar?username=<%= user.username %>)"></div>
+              </div>
+            </div>
+            <div class="kt-profile__main-info">
+              <div class="kt-profile__main-info-name"><%= user.fullname %></div>
+              <div class="kt-profile__main-info-position">Employee</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-12 col-lg-4 col-xl-4">
+          <div class="kt-profile__contact">
+            <a class="kt-profile__contact-item">
+              <span class="kt-profile__contact-item-icon kt-profile__contact-item-icon-whatsup"><i class="flaticon-whatsapp"></i></span>
+              <span class="kt-profile__contact-item-text"><%= user.phonenumber %></span>
+            </a>
+            <a class="kt-profile__contact-item">
+              <span class="kt-profile__contact-item-icon"><i class="flaticon-email-black-circular-button kt-font-danger"></i></span>
+              <span class="kt-profile__contact-item-text"><%= user.email %></span>
+            </a>
+            <a href="/users/<%= user.username %>" class="kt-profile__contact-item">
+              <span class="kt-profile__contact-item-icon kt-profile__contact-item-icon-twitter"><i class="flaticon2-user"></i></span>
+              <span class="kt-profile__contact-item-text">@<%= user.username %></span>
+            </a>
+          </div>
+        </div>
+        <div class="col-md-12 col-lg-3 col-xl-4">
+          <div class="kt-profile__stats">
+            <div class="kt-profile__stats-item">
+              <div class="kt-profile__stats-item-label">Files</div>
+              <div class="kt-profile__stats-item-chart">
+                <span>Uploaded: <strong><%= files.count + ' ' + (files.count > 1 ? 'files': 'file') %></strong>, used size: <strong><%= files.size %></strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--end::Portlet-->
+  <div class="tab-content">
+      <!--begin::Row-->
+      <div class="row">
+        <div class="col-lg-4 col-xl-3">
+          <div class="kt-portlet">
+            <div class="kt-portlet__body kt-portlet__body--fit">
+              <ul class="kt-nav kt-nav--bold kt-nav--md-space kt-nav--v3 kt-margin-t-20 kt-margin-b-20 nav nav-tabs" role="tablist">
+                <li class="kt-nav__item">
+                  <a class="kt-nav__link <%= tab === 'profile' ? 'active': ''%>" data-toggle="tab" href="#kt_profile_tab_personal_information" role="tab">
+                    <span class="kt-nav__link-icon"><i class="flaticon2-user-outline-symbol"></i></span>
+                    <span class="kt-nav__link-text">Personal Information</span>
+                  </a>
+                </li>
+                <li class="kt-nav__item">
+                  <a class="kt-nav__link <%= tab === 'account' ? 'active': ''%>" data-toggle="tab" href="#kt_profile_tab_account_information" role="tab">
+                    <span class="kt-nav__link-icon"><i class="flaticon2-soft-icons-1"></i></span>
+                    <span class="kt-nav__link-text">Acccount Information</span>
+                  </a>
+                </li>
+                <li class="kt-nav__item">
+                  <a class="kt-nav__link <%= tab === 'password' ? 'active': ''%>" data-toggle="tab" href="#kt_profile_change_password" role="tab">
+                    <span class="kt-nav__link-icon"><i class="flaticon2-lock"></i></span>
+                    <span class="kt-nav__link-text">Change Password</span>
+                  </a>
+                </li>
+                <!--<li class="kt-nav__item">
+                  <a class="kt-nav__link <%= tab === 'setting' ? 'active': ''%>" data-toggle="tab" href="#kt_profile_email_settings" role="tab">
+                    <span class="kt-nav__link-icon"><i class="flaticon2-mail"></i></span>
+                    <span class="kt-nav__link-text">Email Settings</span>
+                  </a>
+                </li>-->
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8 col-xl-9">
+          <div class="tab-content">
+
+            <!--begin: Personal Information-->
+            <div class="tab-pane fade <%= tab === 'profile' ? 'show active': ''%>" id="kt_profile_tab_personal_information" role="tabpanel">
+              <div class="kt-portlet">
+                <div class="kt-portlet__head">
+                  <div class="kt-portlet__head-label">
+                    <h3 class="kt-portlet__head-title">Personal Information <small>update your personal informaiton</small></h3>
+                  </div>
+                </div>
+                <form class="kt-form kt-form--label-right" action="/profile" method="post" enctype="multipart/form-data">
+                  <div class="kt-portlet__body">
+                    <div class="kt-section kt-section--first">
+                      <div class="kt-section__body">
+                        <div class="row">
+                          <label class="col-xl-3"></label>
+                          <div class="col-lg-9 col-xl-6">
+                            <h3 class="kt-section__title kt-section__title-sm">Customer Info:</h3>
+                          </div>
+                        </div>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <div class="form-group row">
+                          <label class="col-xl-3 col-lg-3 col-form-label">Avatar</label>
+                          <div class="col-lg-9 col-xl-6">
+                            <div class="kt-avatar kt-avatar--outline kt-avatar--circle" id="kt_profile_avatar">
+                              <div class="kt-avatar__holder" style="background-size: cover;background-image: url(/avatar?username=<%= user.username %>)"></div>
+                              <label class="kt-avatar__upload" data-toggle="kt-tooltip" title="Change avatar">
+                                <i class="fa fa-pen"></i>
+                                <input type='file' name="avatar" />
+                              </label>
+                              <span class="kt-avatar__cancel" data-toggle="kt-tooltip" title="Cancel avatar">
+                                <i class="fa fa-times"></i>
+                              </span>
+                              <% if(errors.find(error => error.param ==='avatar')) { %>
+                                <span class="form-text text-danger"><%= errors.find(error => error.param ==='avatar').msg %></span>
+                              <% }; %>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-xl-3 col-lg-3 col-form-label">Full Name</label>
+                          <div class="col-lg-9 col-xl-6">
+                            <% if(errors.find(error => error.param ==='fullname')) { %>
+                              <input class="form-control is-invalid" name="fullname" type="text" value="<%= fullname[0] || user.fullname %>">
+                              <div class="invalid-feedback"><%= errors.find(error => error.param ==='fullname').msg %></div>
+                            <% } else { %>
+                              <input class="form-control" name="fullname" type="text" value="<%= fullname[0] || user.fullname %>">
+                            <% }; %>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-xl-3 col-lg-3 col-form-label">Contact Phone</label>
+                          <div class="col-lg-9 col-xl-6">
+                            <div class="input-group">
+                              <div class="input-group-prepend"><span class="input-group-text"><i class="la la-phone"></i></span></div>
+                              <% if(errors.find(error => error.param ==='phonenumber')) { %>
+                                <input type="text" name="phonenumber" class="form-control is-invalid" value="<%= phonenumber[0] || user.phonenumber %>" placeholder="Phone" aria-describedby="basic-addon1">
+                                <div class="invalid-feedback"><%= errors.find(error => error.param ==='phonenumber').msg %></div>
+                              <% } else { %>
+                                <input class="form-control" name="phonenumber" type="text" value="<%= phonenumber[0] || user.phonenumber %>">
+                              <% }; %>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-xl-3 col-lg-3 col-form-label">Email Address</label>
+                          <div class="col-lg-9 col-xl-6">
+                            <div class="input-group">
+                              <div class="input-group-prepend"><span class="input-group-text"><i class="la la-at"></i></span></div>
+                              <input type="text" class="form-control" value="<%= user.email %>" placeholder="Email" aria-describedby="basic-addon1" disabled>
+                            </div>
+                            <span class="form-text text-muted">We'll never share your email with anyone else.</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="kt-portlet__foot">
+                    <div class="kt-form__actions">
+                      <div class="row">
+                        <div class="col-lg-3 col-xl-3">
+                        </div>
+                        <div class="col-lg-9 col-xl-9">
+                          <button type="submit" class="btn btn-success">Submit</button>&nbsp;
+                          <a href="/" class="btn btn-secondary">Cancel</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!--end: Personal Information-->
+
+            <!--begin: Account Information-->
+            <div class="tab-pane fade <%= tab === 'account' ? 'show active': ''%>" id="kt_profile_tab_account_information" role="tabpanel">
+              <div class="kt-portlet">
+                <div class="kt-portlet__head">
+                  <div class="kt-portlet__head-label">
+                    <h3 class="kt-portlet__head-title">Account Information <small>change your account settings</small></h3>
+                  </div>
+                </div>
+                <form class="kt-form kt-form--label-right" action="/account" method="post">
+                  <div class="kt-portlet__body">
+                    <div class="kt-section kt-section--first">
+                      <div class="kt-section__body">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <div class="row">
+                          <label class="col-xl-3"></label>
+                          <div class="col-lg-9 col-xl-6">
+                            <h3 class="kt-section__title kt-section__title-sm">Account:</h3>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-xl-3 col-lg-3 col-form-label">Username</label>
+                          <div class="col-lg-9 col-xl-6">
+                            <% if(errors.find(error => error.param ==='username')) { %>
+                              <input class="form-control is-invalid" name="username" type="text" value="<%= username[0] || user.username %>">
+                              <div class="invalid-feedback"><%= errors.find(error => error.param ==='username').msg %></div>
+                            <% } else { %>
+                              <input class="form-control" name="username" type="text" value="<%= username[0] || user.username %>">
+                            <% }; %>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-xl-3 col-lg-3 col-form-label">Email Address</label>
+                          <div class="col-lg-9 col-xl-6">
+                            <div class="input-group">
+                              <div class="input-group-prepend"><span class="input-group-text"><i class="la la-at"></i></span></div>
+                              <% if(errors.find(error => error.param ==='email')) { %>
+                                <input class="form-control is-invalid" name="email" type="text" value="<%= email[0] || user.email %>" placeholder="Email" aria-describedby="basic-addon1">
+                                <div class="invalid-feedback"><%= errors.find(error => error.param ==='email').msg %></div>
+                              <% } else { %>
+                                <input class="form-control" name="email" type="text" value="<%= email[0] || user.email %>" placeholder="Email" aria-describedby="basic-addon1">
+                              <% }; %>
+                            </div>
+                            <span class="form-text text-muted">Email will not be publicly displayed.</span>
+                          </div>
+                        </div>
+                        <div class="form-group form-group-last row">
+                          <label class="col-xl-3 col-lg-3 col-form-label">Communication</label>
+                          <div class="col-lg-9 col-xl-6">
+                            <div class="kt-checkbox-inline">
+                              <label class="kt-checkbox">
+                                <input type="checkbox" checked> Email
+                                <span></span>
+                              </label>
+                              <label class="kt-checkbox">
+                                <input type="checkbox" disabled> SMS
+                                <span></span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="kt-separator kt-separator--border-dashed kt-separator--portlet-fit kt-separator--space-lg"></div>
+                    <div class="kt-section kt-section--first">
+                      <div class="kt-section__body">
+                        <div class="form-group row">
+                          <label class="col-xl-3 col-lg-3 col-form-label">Current Password</label>
+                          <div class="col-lg-9 col-xl-6">
+                            <% if(errors.find(error => error.param ==='password')) { %>
+                              <input class="form-control is-invalid" name="password" type="password" value="" placeholder="">
+                              <div class="invalid-feedback"><%= errors.find(error => error.param ==='password').msg %></div>
+                            <% } else { %>
+                              <input class="form-control" name="password" type="password" value="" placeholder="" required>
+                            <% }; %>
+                            <span class="form-text text-muted">
+                              To change your account information, your current password is required!
+                              <a href="/forgot" class="kt-link kt-font-sm kt-font-bold">Forgot password ?</a>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="kt-portlet__foot">
+                    <div class="kt-form__actions">
+                      <div class="row">
+                        <div class="col-lg-3 col-xl-3">
+                        </div>
+                        <div class="col-lg-9 col-xl-9">
+                          <button type="submit" class="btn btn-success">Submit</button>&nbsp;
+                          <button type="reset" class="btn btn-secondary">Cancel</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!--end: Account Information-->
+
+            <!--begin: Change Password -->
+            <div class="tab-pane fade <%= tab === 'password' ? 'show active': ''%>" id="kt_profile_change_password" role="tabpanel">
+              <div class="kt-portlet">
+                <div class="kt-portlet__head">
+                  <div class="kt-portlet__head-label">
+                    <h3 class="kt-portlet__head-title">Change Password<small>change or reset your account password</small></h3>
+                  </div>
+                </div>
+                <form class="kt-form kt-form--label-right" action="/password" method="post">
+                  <div class="kt-portlet__body">
+                    <div class="kt-section kt-section--first">
+                      <div class="kt-section__body">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <div class="row">
+                          <label class="col-xl-3"></label>
+                          <div class="col-lg-9 col-xl-6">
+                            <h3 class="kt-section__title kt-section__title-sm">Change Or Recover Your Password:</h3>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-xl-3 col-lg-3 col-form-label">Current Password</label>
+                          <div class="col-lg-9 col-xl-6">
+                            <% if(errors.find(error => error.param ==='current')) { %>
+                              <input class="form-control is-invalid" name="current" type="password" value="" placeholder="Current password" required>
+                              <div class="invalid-feedback"><%= errors.find(error => error.param ==='current').msg %></div>
+                            <% } else { %>
+                              <input class="form-control" tabindex="1" name="current" type="password" value="" placeholder="Current password" required>
+                            <% }; %>
+                            <a href="/forgot" class="kt-link kt-font-sm kt-font-bold kt-margin-t-5">Forgot password ?</a>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-xl-3 col-lg-3 col-form-label">New Password</label>
+                          <div class="col-lg-9 col-xl-6">
+                            <% if(errors.find(error => error.param ==='new')) { %>
+                              <input class="form-control is-invalid" name="new" type="password" value="" placeholder="New password" required>
+                              <div class="invalid-feedback"><%= errors.find(error => error.param ==='new').msg %></div>
+                            <% } else { %>
+                              <input class="form-control" tabindex="2" name="new" type="password" value="" placeholder="New password" required>
+                            <% }; %>
+                          </div>
+                        </div>
+                        <div class="form-group form-group-last row">
+                          <label class="col-xl-3 col-lg-3 col-form-label">Verify Password</label>
+                          <div class="col-lg-9 col-xl-6">
+                            <% if(errors.find(error => error.param ==='verify')) { %>
+                              <input class="form-control is-invalid" name="verify" type="password" value="" placeholder="verify password" required>
+                              <div class="invalid-feedback"><%= errors.find(error => error.param ==='verify').msg %></div>
+                            <% } else { %>
+                              <input class="form-control" tabindex="3" name="verify" type="password" value="" placeholder="verify password" required>
+                            <% }; %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="kt-portlet__foot">
+                    <div class="kt-form__actions">
+                      <div class="row">
+                        <div class="col-lg-3 col-xl-3">
+                        </div>
+                        <div class="col-lg-9 col-xl-9">
+                          <button type="submit" class="btn btn-danger">Change Password</button>&nbsp;
+                          <button type="reset" class="btn btn-secondary">Cancel</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!--end: Change Password -->
+
+            <!--begin: Email Settings -->
+            <div class="tab-pane fade <%= tab === 'setting' ? 'show active': ''%>" id="kt_profile_email_settings" role="tabpanel">
+              <div class="kt-portlet">
+                <div class="kt-portlet__head">
+                  <div class="kt-portlet__head-label">
+                    <h3 class="kt-portlet__head-title">Email Notifications <small>control when and how often Keen sends emails to you</small></h3>
+                  </div>
+                </div>
+                <form class="kt-form kt-form--label-right">
+                  <div class="kt-portlet__body">
+                    <div class="kt-section kt-section--first">
+                      <div class="kt-section__body">
+                        <div class="row">
+                          <label class="col-xl-3"></label>
+                          <div class="col-lg-9 col-xl-6">
+                            <h3 class="kt-section__title kt-section__title-sm">Setup Email Notification:</h3>
+                          </div>
+                        </div>
+                        <div class="form-group form-group-sm row">
+                          <label class="col-xl-3 col-lg-3 col-form-label">Email Notification</label>
+                          <div class="col-lg-9 col-xl-6">
+                            <span class="kt-switch">
+                              <label>
+                                <input type="checkbox" checked="checked" name="email_notification_1">
+                                <span></span>
+                              </label>
+                            </span>
+                          </div>
+                        </div>
+                        <div class="form-group form-group-last row">
+                          <label class="col-xl-3 col-lg-3 col-form-label">Send Copy To Personal Email</label>
+                          <div class="col-lg-9 col-xl-6">
+                            <span class="kt-switch">
+                              <label>
+                                <input type="checkbox" name="email_notification_2">
+                                <span></span>
+                              </label>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="kt-separator kt-separator--border-dashed kt-separator--portlet-fit kt-separator--space-lg"></div>
+                    <div class="kt-section kt-section--first">
+                      <div class="kt-section__body">
+                        <div class="row">
+                          <label class="col-xl-3"></label>
+                          <div class="col-lg-9 col-xl-6">
+                            <h3 class="kt-section__title kt-section__title-sm">Activity Related Emails:</h3>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-xl-3 col-lg-3 col-form-label">When To Email</label>
+                          <div class="col-lg-9 col-xl-6">
+                            <div class="kt-checkbox-list">
+                              <label class="kt-checkbox">
+                                <input type="checkbox"> You have new notifications.
+                                <span></span>
+                              </label>
+                              <label class="kt-checkbox">
+                                <input type="checkbox"> You're sent a direct message
+                                <span></span>
+                              </label>
+                              <label class="kt-checkbox">
+                                <input type="checkbox" checked="checked"> Someone adds you as a connection
+                                <span></span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group form-group-last row">
+                          <label class="col-xl-3 col-lg-3 col-form-label">When To Escalate Emails</label>
+                          <div class="col-lg-9 col-xl-6">
+                            <div class="kt-checkbox-list">
+                              <label class="kt-checkbox kt-checkbox--brand">
+                                <input type="checkbox"> Upon new order.
+                                <span></span>
+                              </label>
+                              <label class="kt-checkbox kt-checkbox--brand">
+                                <input type="checkbox"> New membership approval
+                                <span></span>
+                              </label>
+                              <label class="kt-checkbox kt-checkbox--brand">
+                                <input type="checkbox" checked="checked"> Member registration
+                                <span></span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="kt-separator kt-separator--border-dashed kt-separator--portlet-fit kt-separator--space-lg"></div>
+                    <div class="kt-section kt-section--first">
+                      <div class="kt-section__body">
+                        <div class="row">
+                          <label class="col-xl-3"></label>
+                          <div class="col-lg-9 col-xl-6">
+                            <h3 class="kt-section__title kt-section__title-sm">Updates From Keen:</h3>
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label class="col-xl-3 col-lg-3 col-form-label">Email You With</label>
+                          <div class="col-lg-9 col-xl-6">
+                            <div class="kt-checkbox-list">
+                              <label class="kt-checkbox">
+                                <input type="checkbox"> News about Keen product and feature updates
+                                <span></span>
+                              </label>
+                              <label class="kt-checkbox">
+                                <input type="checkbox"> Tips on getting more out of Keen
+                                <span></span>
+                              </label>
+                              <label class="kt-checkbox">
+                                <input type="checkbox" checked="checked"> Things you missed since you last logged into Keen
+                                <span></span>
+                              </label>
+                              <label class="kt-checkbox">
+                                <input type="checkbox" checked="checked"> News about Keen on partner products and other services
+                                <span></span>
+                              </label>
+                              <label class="kt-checkbox">
+                                <input type="checkbox" checked="checked"> Tips on Keen business products
+                                <span></span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="kt-portlet__foot">
+                    <div class="kt-form__actions">
+                      <div class="row">
+                        <div class="col-lg-3 col-xl-3">
+                        </div>
+                        <div class="col-lg-9 col-xl-9">
+                          <button type="reset" class="btn btn-danger">Change Password</button>&nbsp;
+                          <button type="reset" class="btn btn-secondary">Cancel</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!--end: Email Settings -->
+          </div>
+        </div>
+      </div>
+
+      <!--end::Row-->
+  </div>
+</div>
+
+<!-- end:: Content -->

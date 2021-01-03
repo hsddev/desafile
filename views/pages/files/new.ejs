@@ -1,0 +1,83 @@
+<% layout('../../layouts/page'); %>
+
+<% block('baseUrl', '../'); -%>
+
+<% block('title', 'Upload New File || ' + page.companyName); -%>
+
+<% block('jsfile', 'files-new'); -%>
+
+<!-- begin:: Content -->
+<div class="kt-content kt-grid__item kt-grid__item--fluid">
+
+  <!--begin::Row-->
+  <div class="row">
+    <div class="col-12">
+      <div class="kt-portlet">
+        <div class="kt-portlet__head">
+          <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title">Add New File</h3>
+          </div>
+        </div>
+        <form class="kt-form" action="" method="post" enctype="multipart/form-data">
+          <div class="kt-portlet__body">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <div class="form-group">
+              <label>Title</label>
+              <% if(errors.find(error => error.param ==='title')) { %>
+                <input class="form-control is-invalid" type="text" name="title" aria-describedby="titleHelp" placeholder="Enter title for your file">
+                <div class="invalid-feedback"><%= errors.find(error => error.param ==='title').msg %></div>
+              <% } else { %>
+                <input class="form-control" type="text" name="title" value="<%= title[0] || ''  %>" aria-describedby="titleHelp" placeholder="Enter title for your file">
+              <% }; %>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <% if(errors.find(error => error.param ==='description')) { %>
+                <textarea class="form-control is-invalid" id="kt_maxlength_4" maxlength="200" name="description" rows="3"><%= description[0] || ''  %></textarea>
+                <div class="invalid-feedback"><%= errors.find(error => error.param ==='description').msg %></div>
+              <% } else { %>
+                <textarea class="form-control" id="kt_maxlength_3" maxlength="200" name="description" rows="3"><%= description[0] || ''  %></textarea>
+              <% }; %>
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <div class="typeahead">
+                <% if(errors.find(error => error.param ==='category')) { %>
+                  <input class="form-control is-invalid" name="category" id="category" type="text" placeholder="select or input new" autocomplete="off">                              
+                  <div class="invalid-feedback"><%= errors.find(error => error.param ==='category').msg %></div>
+                <% } else { %>
+                  <input class="form-control" name="category" id="category" type="text" placeholder="select or input new" autocomplete="off">                              
+                <% }; %>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>File Browser</label>
+              <div class="custom-file">
+              <% if(errors.find(error => error.param ==='file')) { %>
+                <input type="file" name="file" class="custom-file-input is-invalid" id="customFile">
+                <label class="custom-file-label" for="customFile">Choose file</label>
+                <div class="invalid-feedback"><%= errors.find(error => error.param ==='file').msg %></div>
+              <% } else { %>
+                <input type="file" name="file" class="custom-file-input" id="customFile">
+                <label class="custom-file-label" for="customFile">Choose file</label>
+              <% }; %>
+              </div>
+              <span class="form-text text-muted">We'll never share your file with anyone else.</span>
+            </div>
+          </div>
+          <div class="kt-portlet__foot">
+            <div class="kt-form__actions">
+              <button type="submit" class="btn btn-primary">Submit</button>
+              <a href="/files" class="btn btn-secondary">Cancel</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!--end::Row-->
+</div>
+
+<!-- end:: Content -->
+	

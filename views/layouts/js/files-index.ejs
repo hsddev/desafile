@@ -1,0 +1,466 @@
+
+<script type="text/javascript">
+  function downloadFile(id, filename, ext, size, type) {
+    swal({
+          title: 'File is ready to be downloaded!',
+          text: "This file will be permanently deleted in 2 days, you can recover it from my deleted files.",
+          type: 'success',
+          html: '<form type="hidden" target="_blank" id="form-download" action="/files/'+id+'?request=download" method="post">\
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">\
+                    <div class="form-group">\
+                        <label>File name</label>\
+                        <div>\
+                            <div class="input-group">\
+                              <input type="text" class="form-control" name="filename" value="'+filename+'" aria-describedby="FileExt" />\
+                              ' + ((ext) ? '<div class="input-group-append"><span class="input-group-text" id="FileExt">'+ext+'</span></div>': '') + '\
+                            </div>\
+                          <span class="form-text text-muted">Size: '+size+', Type: '+type+'</span>\
+                        </div>\
+                      </div>\
+                  </form>',
+          confirmButtonText: 'Download Now!',
+      }).then(function(result){
+          if (result.value) {
+            $('form#form-download').submit();
+          }
+      })
+  }
+
+  <% if(typeof page.type == 'undefined') { %>
+  function deleteFile(id, _csrf) {
+    swal({
+        title: 'Are you sure?',
+        text: "This file will be permanently deleted in 2 days, you can recover it from my deleted files.",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, cancel!',
+        reverseButtons: true
+        })
+      .then(function(result){
+        if (result.value) {
+          var url = '/files/'+ id;
+          $.ajax({
+            type: "DELETE",
+            url: url,
+            data: {
+              _csrf: _csrf,
+            },
+            success: function(data) {
+              if(data && data.success) {
+                swal(
+                    'Deleted!',
+                    'Your file has been deleted.',
+                    'success'
+                ).then(function(result){
+                  if(result.value || result.dismiss) {
+                    window.location.href = '/files';
+                  }
+                });
+              }
+            }
+          });
+        }
+      });
+  }
+  <% }; %>
+  <% if(typeof page.type != 'undefined' && page.type == 'recivedFiles') { %>
+  function removeSharedFile(id, _csrf) {
+    swal({
+        title: 'Are you sure?',
+        text: "You will not be able to see or download this file, only if its owner shares it with you again",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete file from my shared list!',
+        cancelButtonText: 'No, cancel!',
+        })
+      .then(function(result){
+        if (result.value) {
+          var url = '/files/'+ id;
+          $.ajax({
+            type: "DELETE",
+            url: url,
+            data: {
+              _csrf: _csrf,
+              shared: true
+            },
+            success: function(data) {
+              if(data && data.success) {
+                swal(
+                    'Removed!',
+                    'File has been successfuly removed from your shared files list.',
+                    'success'
+                ).then(function(result){
+                  if(result.value || result.dismiss) {
+                    window.location.href = '/files/shared';
+                  }
+                });
+              }
+            }
+          });
+        }
+      });
+  }
+  <% }; %>
+  <% if(typeof page.type != 'undefined' && page.type == 'deletedFiles') { %>
+  function recoverFile(id, _csrf) {
+    swal({
+          title: 'File Recovering',
+          text: "This file will be recovered to the uploaded list.",
+          type: 'info',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, revocer it now!',
+          cancelButtonText: 'No, cancel!',
+          reverseButtons: true
+          }).then(function(result){
+              if (result.value) {
+                var url = '/files/'+ id;
+                  $.ajax({
+                    type: "DELETE",
+                    url: url,
+                    data: {
+                      _csrf: _csrf,
+                      recover: true
+                    },
+                    success: function(data) {
+                      if(data && data.success) {
+                        swal({
+                            title:'Success!',
+                            text:'Your file has been successfuly recoverd.',
+                            type:'success',
+                            showCancelButton: true,
+                            confirmButtonText: 'to Uploded files list!',
+                            cancelButtonText: 'to Deleted files list!'
+                        }
+                        ).then(function(result){
+                          if(result.value) {
+                            window.location.href = '/files/';
+                          } else {  
+                            window.location.href = '/files/deleted';
+                          }
+                        });
+                      }
+                    }
+                  });
+              }
+          });
+  }
+  <% }; %>
+</script>
+
+<script type="text/javascript">
+      var UploadsFilesList = (function() {
+        // demo initializer
+        var uploads = function() {
+            var datatable = $("#kt_datatable").KTDatatable({
+            // datasource definition
+            data: {
+              type: "local",
+              source: <%- files %>,
+              pageSize: 10,
+            },
+            translate: {
+              records: {
+                noRecords: 'No files'
+              }
+            },
+            // layout definition
+            layout: {
+              theme: "default",
+              scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
+              // height: 450, // datatable's body's fixed height
+              footer: false // display/hide footer
+            },
+            // column sorting
+            sortable: true,
+
+            pagination: true,
+
+            search: {
+              input: $("#generalSearch")
+            },
+
+            // columns definition
+            columns: [
+              {
+                field: "id",
+                title: "#",
+                sortable: false,
+                width: 20,
+                type: "number",
+                selector: { class: "kt-checkbox--solid" },
+                textAlign: "center"
+              },
+              {
+                field: "title",
+                title: "Title",
+              },
+              {
+                field: "description",
+                title: "Description"
+              },
+              {
+                field: "size",
+                title: "Size",
+              },
+              {
+                field: "type",
+                title: "Type",
+                autoHide: false,
+                // callback function support for column rendering
+                template: function(row) {
+                  return (
+                    '<span class="kt-font-bold kt-font-success">' + row.type +
+                    "</span>"
+                  );
+                }
+              },
+            <% if(typeof page.type == 'undefined' || (typeof page.type != 'undefined' && page.type === 'deletedFiles' ) ) { %>
+              {
+                field: "category",
+                title: "Category",
+                template: function(row) {
+                  return (
+                    '<span class="kt-font-bold kt-font-danger">' + row.category +
+                    "</span>"
+                  );
+                }
+              },
+            <% }; %>
+            <% if(typeof page.type != 'undefined' && page.type === 'recivedFiles' ) { %> 
+              {
+                field: "owner",
+                title: "File Owner",
+                template: function(row) {
+                  return (
+                    '<a href="/users/'+ row.owner +'" >@'+row.owner+'</a>'
+                  );
+                }
+              },
+            <% }; %>
+            <% if(typeof page.type == 'undefined' || (typeof page.type != 'undefined' && page.type === 'deletedFiles' ) ) { %>
+              {
+                field: "sharedWith",
+                title: "Shared With",
+                textAlign: "center",
+                template: function(row) {
+                  return ( row.sharedWith.length > 0 ?
+                    '<span style="cursor: pointer;" data-file-id="'+ row.id +'" data-toggle="modal" data-target="#sharedWith">' + row.sharedWith.length + ' <i class="flaticon2-avatar"></i></span>' :
+                    '<span>' + row.sharedWith.length + ' <i class="flaticon2-avatar"></i></span>'
+                  );
+                }
+              },
+            <% }; %>
+            <% if(typeof page.type == 'undefined' || (typeof page.type != 'undefined' && page.type === 'deletedFiles' ) ) { %>
+              {
+                field: "downloads",
+                title: "Downloads",
+                textAlign: "center",
+                template: function(row) {
+                  return ( row.downloads.length > 0 ?
+                    '<span style="cursor: pointer;" data-file-id="'+ row.id +'" data-toggle="modal" data-target="#downloads">' + row.downloads.length + ' <i class="flaticon2-download"></i></span>' :
+                    '<span>' + row.downloads.length + ' <i class="flaticon2-download"></i></span>'
+                  );
+                }
+              },
+            <% }; %>
+              {
+                field: "createdAt",
+                title: "Created Date",
+                type: "date",
+                template: function(row) {
+                  var stillUtc = moment.utc(row.createdAt).toDate();
+                  return moment(stillUtc).local().format('DD/MM/YYYY HH:mm:ss');
+                }
+              },
+              {
+                field: "updatedAt",
+                title: "<%= (typeof page.type != 'undefined' && page.type == 'deletedFiles') ? 'Delete at':'Updated Date' %>",
+                type: "date",
+                template: function(row) {
+                  var stillUtc = moment.utc(row.updatedAt).toDate();
+                  var date = moment(stillUtc).local().format('DD/MM/YYYY HH:mm:ss');
+                  var isDanger = <%= (typeof page.type != 'undefined' && page.type == 'deletedFiles') ? 'true':'false' %>;
+                  return isDanger ? '<span class="kt-font-bold kt-font-warning">' + date + '</span>' : date;
+                }
+              },
+              {
+                field: "Actions",
+                title: "Actions",
+                sortable: false,
+                width: 110,
+                overflow: "visible",
+                autoHide: false,
+                textAlign: "center",
+                template: function(row) {
+                  <% if(typeof page.type == 'undefined') { %>
+                    return '\
+                      <button download type="button" onclick="downloadFile(\''+ row.id +'\',\''+ row.originalname +'\',\''+ row.ext +'\',\''+ row.size +'\',\''+ row.type +'\');" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Download">\
+                        <i class="la la-download"></i>\
+                      </button>\
+                      <a href="/files/'+ row.id +'" data-file-id="hello wolrd;" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Edit">\
+                        <i class="la la-edit"></i>\
+                      </a>\
+                      <button type="button" onclick="deleteFile(\''+ row.id +'\', \'<%= csrfToken %>\');" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Delete">\
+                        <i class="la la-trash"></i>\
+                      </button>\
+                    ';
+                  <% } else if(typeof page.type != 'undefined' && page.type === 'deletedFiles' ) { %> 
+                    return '\
+                      <button download type="button" onclick="downloadFile(\''+ row.id +'\',\''+ row.originalname +'\',\''+ row.ext +'\',\''+ row.size +'\',\''+ row.type +'\');" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Download">\
+                        <i class="la la-download"></i>\
+                      </button>\
+                      <a href="/files/'+ row.id +'" data-file-id="hello wolrd;" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Edit">\
+                        <i class="la la-edit"></i>\
+                      </a>\
+                      <button type="button" onclick="recoverFile(\''+ row.id +'\', \'<%= csrfToken %>\');" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Recover">\
+                        <i class="la la-undo"></i>\
+                      </button>\
+                    ';
+                  <% } else if (typeof page.type != 'undefined' && page.type === 'recivedFiles' ) { %>
+                    return '\
+                      <button download type="button" onclick="downloadFile(\''+ row.id +'\',\''+ row.originalname +'\',\''+ row.ext +'\',\''+ row.size +'\',\''+ row.type +'\');" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Download">\
+                        <i class="la la-download"></i>\
+                      </button>\
+                      <a href="/files/'+ row.id +'" data-file-id="hello wolrd;" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Edit">\
+                        <i class="la la-eye"></i>\
+                      </a>\
+                      <button type="button" onclick="removeSharedFile(\''+ row.id +'\', \'<%= csrfToken %>\');" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Remove From my shared list">\
+                        <i class="la la-trash"></i>\
+                      </button>\
+                    ';
+                  <% }; %>
+                }
+              }
+            ]
+          });
+
+          $("#kt_form_category").on("change", function() {
+            datatable.search(
+              $(this)
+                .val()
+                .toLowerCase(),
+              "category"
+            );
+          });
+
+          $("#kt_form_type").on("change", function() {
+            datatable.search(
+              $(this)
+                .val()
+                .toLowerCase(),
+              "type"
+            );
+          });
+
+          $("#kt_form_category,#kt_form_type").selectpicker();
+
+          datatable.on('kt-datatable--on-check kt-datatable--on-uncheck kt-datatable--on-layout-updated',  function(e){
+            var a = datatable.rows(".kt-datatable__row--active").nodes().length;
+            $("#kt_datatable_selected_number").html(a),
+              a > 0
+                ? $("#kt_datatable_group_action_form").collapse("show")
+                : $("#kt_datatable_group_action_form").collapse("hide");       
+          });
+
+          $("#selectedRows")
+              .on("show.bs.modal", function(t) {
+                for (
+                  var a = datatable
+                      .rows(".kt-datatable__row--active")
+                      .nodes()
+                      .find('.kt-checkbox--single > [type="checkbox"]')
+                      .map(function(t, e) {
+                        return $(e).val();
+                      }),
+                    n = document.createDocumentFragment(),
+                    l = 0;
+                  l < a.length;
+                  l++
+                ) {
+                  var i = document.createElement("li");
+                  i.setAttribute("data-id", a[l]),
+                    (i.innerHTML = "Selected record ID: " + a[l]),
+                    n.appendChild(i);
+                }
+                $(t.target)
+                  .find(".kt_datatable_selected_ids")
+                  .append(n);
+              })
+              .on("hide.bs.modal", function(t) {
+                $(t.target)
+                  .find(".kt_datatable_selected_ids")
+                  .empty();
+              });
+
+          $("#sharedWith")
+              .on("show.bs.modal", function(t) {
+                var fileId = $(t.relatedTarget).attr('data-file-id');
+                var file = datatable.dataSet.toArray().find(file => file.id === fileId);
+                var users = file.sharedWith;
+                for (
+                  var n = document.createDocumentFragment(),
+                    l = 0;
+                  l < users.length;
+                  l++
+                ) {
+                  var i = document.createElement("li");
+                  i.setAttribute("data-username", users[l].username),
+                    (i.innerHTML = users[l].fullname + ' (<a target="_blank" href="/users/' + users[l].username + '">@' + users[l].username+ '</a>)' ),
+                    n.appendChild(i);
+                }
+                $(t.target)
+                  .find(".kt_datatable_selected_ids")
+                  .append(n);
+              })
+              .on("hide.bs.modal", function(t) {
+                $(t.target)
+                  .find(".kt_datatable_selected_ids")
+                  .empty();
+              });
+          $("#downloads")
+              .on("show.bs.modal", function(t) {
+                var fileId = $(t.relatedTarget).attr('data-file-id');
+                var file = datatable.dataSet.toArray().find(file => file.id === fileId);
+                var users = file.downloads;
+                for (
+                  var n = document.createDocumentFragment(),
+                    l = 0;
+                  l < users.length;
+                  l++
+                ) {
+                  var i = document.createElement("li");
+                  var time = moment.utc(users[l].time).toDate();
+                  time =  moment(time).local().format('HH:mm  DD/MM/YYYY');
+                  i.setAttribute("data-username", users[l].username),
+                    (i.innerHTML = users[l].fullname + ' (<a target="_blank" href="/users/' + users[l].username + '">@' + users[l].username+ '</a>) at '+ time ),
+                    n.appendChild(i);
+                }
+                $(t.target)
+                  .find(".kt_datatable_selected_ids")
+                  .append(n);
+              })
+              .on("hide.bs.modal", function(t) {
+                $(t.target)
+                  .find(".kt_datatable_selected_ids")
+                  .empty();
+              });
+
+        };
+
+      
+
+        return {
+          // Public functions
+          init: function() {
+            // init dmeo
+            uploads();
+          }
+        };
+      })();
+
+       jQuery(document).ready(function() {
+      UploadsFilesList.init();
+        });
+    
+    </script>	

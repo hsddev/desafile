@@ -1,0 +1,188 @@
+<% layout('../../layouts/page'); %>
+
+<% block('baseUrl', '../'); -%>
+
+<% block('title', 'File Information || ' + file.title + ' || ' + page.companyName); -%>
+
+<% block('jsfile', 'files-info'); -%>
+
+<% script('./assets/js/demo3/pages/crud/forms/widgets/bootstrap-select.js') -%>
+
+<!-- begin:: Content -->
+<div class="kt-content kt-grid__item kt-grid__item--fluid">
+  <!--begin::Row-->
+  <div class="row">
+    <div class="col-12">
+      <div class="kt-portlet">
+        <div class="kt-portlet__head">
+          <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title">File Information</h3>
+          </div>
+          <div class="kt-portlet__head-toolbar">
+            <% if(canEdit) { %>
+            <form type="hidden" id="form-delete" action="/files/<%= file.id%>?request=delete" method="post">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            </form>
+            <% }; %>
+            <a href="<%= !canEdit ? '/files/shared/' : file.deleted ? '/files/deleted':'/files/' %>" class="btn btn-secondary kt-margin-r-10">
+              <i class="la la-arrow-left"></i>
+              <span class="kt-hidden-mobile">Back</span>
+            </a>
+            <% if(canEdit && !file.deleted) { %>
+            <button type="button" onclick="deleteFile('<%= file.id %>', '<%= csrfToken %>');" class="btn btn-danger kt-margin-r-10">
+              <i class="la la-trash"></i>
+              <span class="kt-hidden-mobile">Delete</span>
+            </button>
+            <% } else if (canEdit && file.deleted) { %>
+            <button type="button" onclick="recoverFile('<%= file.id %>', '<%= csrfToken %>');" class="btn btn-warning kt-margin-r-10">
+              <i class="la la-undo"></i>
+              <span class="kt-hidden-mobile">Recover</span>
+            </button>
+            <% }; %>
+            <button type="button" onclick="downloadFile('<%= file.id %>','<%= file.originalname %>', '<%= file.ext %>', '<%= file.size %>', '<%= file.type %>')" class="btn btn-success kt-margin-r-10">
+              <i class="la la-download"></i>
+              <span class="kt-hidden-mobile">Donwload</span>
+            </button>
+            <% if(canEdit) { %>
+            <div class="btn-group">
+              <button type="button" tabindex="5" onclick="document.getElementById('form-save').submit();" class="btn btn-brand">
+                <i class="la la-check"></i> 
+                <span class="kt-hidden-mobile">Save</span>
+              </button>
+            </div>
+            <% }; %>
+          </div>
+        </div>
+        <form class="kt-form kt-form--label-right" id="form-save" action="/files/<%= file.id%>" method="post">
+          <div class="kt-portlet__body">
+            <% if (errors && errors.length > 0) { %>
+              <div class="mx-auto">
+                <div class="alert alert-outline-danger fade show" role="alert">
+                    <div class="alert-icon"><i class="flaticon-questions-circular-button"></i></div>
+                    <div class="alert-text"><ul style="margin: 0;">
+                      <% errors.forEach(function(err) {%>
+                        <li><%= err.msg %></li>
+                      <% }); %>
+                    </ul></div>
+                    <div class="alert-close">
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true"><i class="la la-close"></i></span>
+                      </button>
+                  </div>
+                </div>
+              </div>
+            <% }; %>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <div class="form-group row">
+              <label class="col-xl-3 col-lg-3 col-form-label">File ID</label>
+              <div class="col-lg-9 col-xl-6">
+                <input class="form-control border-0" readonly type="text" value="<%= file.id %>"/>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-xl-3 col-lg-3 col-form-label">File Owner</label>
+              <div class="col-lg-9 col-xl-6">
+                <a class="form-control border-0" target="_blank" href="/users/<%= owner %>">@<%= owner %></a>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-xl-3 col-lg-3 col-form-label">Title</label>
+              <div class="col-lg-9 col-xl-6">
+                <input class="form-control  <%= (!canEdit && canSee) ? 'border-0':'' %>" tabindex="1" autofouces type="text" name="title" <%= (!canEdit && canSee) ? 'readonly':'' %> value="<%= file.title %>">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-xl-3 col-lg-3 col-form-label">Description</label>
+              <div class="col-lg-9 col-xl-6">
+                <% if (canEdit) { %>
+                <textarea class="form-control" id="kt_maxlength_3" tabindex="2" maxlength="200" name="description"><%= file.description %></textarea>
+                <% } else if(!canEdit && canSee && file.description.length > 0) { %>
+                <span class="form-control border-0"><%= file.description %></span>
+                <% } else if(!canEdit && canSee && file.description.length <= 0) { %>
+                <span class="form-control border-0">No description</span>
+                <% }; %>
+              </div>
+            </div>
+            <% if(canEdit) { %>
+            <div class="form-group row">
+              <label class="col-xl-3 col-lg-3 col-form-label">Category</label>
+              <div class="col-lg-9 col-xl-6">
+                <div class="typeahead">
+                  <input class="form-control" name="category" id="category" tabindex="3" type="text" placeholder="select or input new" value="<%= file.category || '' %>"  autocomplete="off">                              
+                </div>
+              </div>
+            </div>  
+            <% }; %>
+            <% if(canEdit) { %>
+            <div class="form-group row">
+              <label class="col-xl-3 col-lg-3 col-form-label">Share with</label>
+              <div class="col-lg-9 col-xl-6">
+                <select class="form-control kt_selectpicker" name="share" data-actions-box="true" multiple data-live-search="true" tabindex="4">
+                <% users.forEach(function(user) { %>
+                  <option value="<%= user.username %>"  title="@<%= user.username %>" <%= user.selected ? "selected":"" %> ><%= user.fullname + ' (@' + user.username + ')'  %></option>
+                <% }) %>
+              </select>
+              </div>
+            </div>
+            <% }; %>
+            <% if(canEdit) { %>
+            <div class="form-group row">
+              <label class="col-xl-3 col-lg-3 col-form-label">Downloads</label>
+              <div class="col-lg-9 col-xl-6">
+                <% if( file.downloads.length > 0) { %>
+                <span class="form-control border-0" style="cursor: pointer;" data-toggle="modal" data-target="#downloads"><%= file.downloads.length %><i class="flaticon2-download ml-3"></i></span>
+                <% } else { %>
+                <span class="form-control border-0"><%= file.downloads.length %><i class="flaticon2-download ml-3"></i></span>
+                <% }; %>
+              </div>
+            </div>
+            <% }; %>
+            <div class="form-group row">
+              <label class="col-xl-3 col-lg-3 col-form-label">Type</label>
+              <div class="col-lg-9 col-xl-6">
+                <input class="form-control border-0" type="text" value="<%= file.type %>" readonly>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-xl-3 col-lg-3 col-form-label">Size</label>
+              <div class="col-lg-9 col-xl-6">
+                <input class="form-control border-0" type="text" value="<%= file.size %>" readonly>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!--end::Row-->
+</div>
+<!-- end:: Content -->
+
+<!--begin::Modal-->
+<div class="modal fade" id="downloads" tabindex="-1" role="dialog" aria-labelledby="titleModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="titleModal">File has been downloaded by:</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="kt-scrollable" data-scrollbar-shown="true" data-scrollable="true" data-height="200">
+          <ul class="kt_datatable_selected_ids">
+            <% file.downloads.forEach(download => { %>
+              <li><%= download.fullname %> (<a target="_blank" href="/users/<%= download.username %>">@<%= download.username %></a>) at <span class="time-to-change" data-time="<%= download.time %>"></span></li>
+            <% });%>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--end::Modal-->
+							
